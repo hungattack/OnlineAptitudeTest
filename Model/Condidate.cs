@@ -1,13 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineAptitudeTest.Model
 {
-    public class User
+    public class Condidate
     {
         [Key]
-        public string Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        [Required]
+        [ForeignKey(nameof(User.Id))]
+        public string managerId { get; set; }
+        [Required]
+        [ForeignKey(nameof(User.Id))]
+        public string userId { get; set; }
         [Required]
         [StringLength(40)]
         public string Name { get; set; }
@@ -17,14 +23,11 @@ namespace OnlineAptitudeTest.Model
         [Required]
         [StringLength(250)]
         public string Password { get; set; }
-       
         [Required]
-        [StringLength(50)]
-        [ForeignKey(nameof(Roles.Id))]
-        public string RoleId { get; set; }
+        public string Education { get; set; }
         [Required]
+        public string Experience { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-       
     }
 }
