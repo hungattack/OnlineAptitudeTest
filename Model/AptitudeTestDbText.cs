@@ -13,7 +13,7 @@ namespace OnlineAptitudeTest.Model
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
-                .HasIndex(ul => new { ul.UserName, ul.Name }).IsUnique(true);
+                .HasIndex(ul => new { ul.Email }).IsUnique(true);
             modelBuilder.Entity<Question>()
                .HasIndex(ul => new { ul.QuestionName }).IsUnique(true);
             modelBuilder.Entity<Roles>()

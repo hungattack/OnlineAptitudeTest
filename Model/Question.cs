@@ -6,17 +6,16 @@ namespace OnlineAptitudeTest.Model
     public class Question
     {
         [Key]
-        public string Id { get; set; }
+        public string? Id { get; set; }
         [Required]
         [StringLength(50)]
         [ForeignKey(nameof(CateParts.Id))]
         public string PartId { get; set; }
         [Required]
         [StringLength(300)]
-        public string QuestionName { get; set; }
-        [Required]
+        public string? QuestionName { get; set; }
         [StringLength(300)]
-        public string Answer { get; set; }
+        public string? Answer { get; set; }
         [Required]
         [MaxLength(5)]
         public int Point { get; set; }
