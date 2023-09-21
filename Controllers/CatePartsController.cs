@@ -43,6 +43,8 @@ namespace OnlineAptitudeTest.Controllers
         public IActionResult AddNew(CateParts catepart)
         {
             CateParts cateParts = db.CateParts.Find(catepart.Id);
+            bool isUser = db.Users.Any(u => u.Id == catepart.userId);
+            if (!isUser) return NotFound("User is not existing!");
             if (cateParts is not null) { return NotFound("Catepart Id is exit"); };
             if (!ModelState.IsValid)
             {

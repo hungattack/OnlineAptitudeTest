@@ -105,7 +105,6 @@ namespace OnlineAptitudeTest.Controllers
             _question.QuestionName = question.QuestionName;
             _question.Answer = question.Answer;
             _question.Point = question.Point;
-            _question.TimeOut = question.TimeOut;
             _question.UpdatedAt = DateTime.Now;
 
             db.Questions.Update(_question);

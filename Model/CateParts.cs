@@ -11,10 +11,10 @@ namespace OnlineAptitudeTest.Model
         public virtual User? user { get; set; }
         [StringLength(50)]
         [ForeignKey(nameof(User.Id))]
+        public string userId { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
-        [MaxLength(11)]
         public int TimeOut { get; set; }
         [Required]
         [StringLength(10)]

@@ -12,8 +12,8 @@ using OnlineAptitudeTest.Model;
 namespace OnlineAptitudeTest.Migrations
 {
     [DbContext(typeof(AptitudeTestDbText))]
-    [Migration("20230920091604_V3")]
-    partial class V3
+    [Migration("20230921040310_V1")]
+    partial class V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,11 +35,9 @@ namespace OnlineAptitudeTest.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TimeOut")
-                        .HasMaxLength(11)
                         .HasColumnType("int");
 
                     b.Property<string>("TimeType")
@@ -51,6 +49,8 @@ namespace OnlineAptitudeTest.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("userId")
+                        .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
@@ -82,7 +82,6 @@ namespace OnlineAptitudeTest.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("Point")
-                        .HasMaxLength(5)
                         .HasColumnType("int");
 
                     b.Property<string>("QuestionName")
@@ -246,7 +245,9 @@ namespace OnlineAptitudeTest.Migrations
                 {
                     b.HasOne("OnlineAptitudeTest.Model.User", "user")
                         .WithMany()
-                        .HasForeignKey("userId");
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("user");
                 });

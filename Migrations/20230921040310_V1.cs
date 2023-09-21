@@ -70,8 +70,10 @@ namespace OnlineAptitudeTest.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    userId = table.Column<string>(type: "nvarchar(50)", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    userId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TimeOut = table.Column<int>(type: "int", nullable: false),
+                    TimeType = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -82,7 +84,8 @@ namespace OnlineAptitudeTest.Migrations
                         name: "FK_CateParts_Users_userId",
                         column: x => x.userId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,8 +97,7 @@ namespace OnlineAptitudeTest.Migrations
                     PartId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     QuestionName = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     Answer = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
-                    Point = table.Column<int>(type: "int", maxLength: 5, nullable: false),
-                    TimeOut = table.Column<int>(type: "int", maxLength: 11, nullable: false),
+                    Point = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
