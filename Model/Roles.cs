@@ -5,6 +5,7 @@ namespace OnlineAptitudeTest.Model
     public class Roles
     {
         [Key]
+        [StringLength(50)]
         public string Id {  get; set; }
         [Required]
         public string Name { get; set; }

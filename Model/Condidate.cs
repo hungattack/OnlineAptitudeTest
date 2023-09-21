@@ -8,6 +8,7 @@ namespace OnlineAptitudeTest.Model
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        public virtual User? user { get; set; }
         [Required]
         [ForeignKey(nameof(User.Id))]
         public string managerId { get; set; }

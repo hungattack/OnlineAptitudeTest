@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineAptitudeTest.Model;
 
@@ -11,9 +12,10 @@ using OnlineAptitudeTest.Model;
 namespace OnlineAptitudeTest.Migrations
 {
     [DbContext(typeof(AptitudeTestDbText))]
-    partial class AptitudeTestDbTextModelSnapshot : ModelSnapshot
+    [Migration("20230920015611_V1")]
+    partial class V1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,15 +37,6 @@ namespace OnlineAptitudeTest.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("TimeOut")
-                        .HasMaxLength(11)
-                        .HasColumnType("int");
-
-                    b.Property<string>("TimeType")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -87,6 +80,10 @@ namespace OnlineAptitudeTest.Migrations
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("TimeOut")
+                        .HasMaxLength(11)
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
