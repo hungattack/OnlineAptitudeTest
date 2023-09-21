@@ -6,7 +6,9 @@ namespace OnlineAptitudeTest.Model
     public class Question
     {
         [Key]
+        [StringLength(50)]
         public string? Id { get; set; }
+        public virtual CateParts? Cate { get; set; }
         [Required]
         [StringLength(50)]
         [ForeignKey(nameof(CateParts.Id))]
@@ -17,11 +19,8 @@ namespace OnlineAptitudeTest.Model
         [StringLength(300)]
         public string? Answer { get; set; }
         [Required]
-        [MaxLength(5)]
         public int Point { get; set; }
-        [Required]
-        [MaxLength(11)]
-        public int TimeOut { get; set; }
+        
         [Required]
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

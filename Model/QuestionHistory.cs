@@ -6,9 +6,11 @@ namespace OnlineAptitudeTest.Model
     public class QuestionHistory
     {
         [Key]
-        public string UserId { get; set; }
-        [Required]
         [StringLength(50)]
+
+        public string UserId { get; set; }
+        public virtual Question? question { get; set; }
+        [Required]
         [ForeignKey(nameof(Question.Id))]
         public string QuestionId { get; set; }
         [Required]
