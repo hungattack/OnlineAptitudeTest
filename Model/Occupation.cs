@@ -3,20 +3,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineAptitudeTest.Model
 {
-    public class CateParts
+    public class Occupation
     {
         [Key]
         [StringLength(50)]
         public string? Id { get; set; }
-        public virtual Occupation? occupation { get; set; }
+        public virtual User? user { get; set; }
         [Required]
-        [ForeignKey(nameof(Occupation.Id))]
-        public string OccupationId { get; set; }
+        [ForeignKey(nameof(User.Id))]
+        public string userId { get; set; }
         [Required]
+        [StringLength(40)]
         public string Name { get; set; }
-        public int? TimeOut { get; set; }
-        [StringLength(10)]
-        public string? TimeType { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

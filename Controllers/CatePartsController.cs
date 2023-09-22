@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using OnlineAptitudeTest.Model;
 using System.Collections;
@@ -6,7 +7,7 @@ using System.Collections;
 namespace OnlineAptitudeTest.Controllers
 {
     [ApiController]
-    [Route("/Api/")]
+    [Route("/api/")]
     public class CatePartsController : ControllerBase
     {
         private readonly AptitudeTestDbText db;
@@ -25,39 +26,53 @@ namespace OnlineAptitudeTest.Controllers
         [Route("[Controller]/[Action]/{id}")]
         public IActionResult GetById(string id)
         {
-            CateParts catepart = db.CateParts.Find(id);
-            if (catepart == null) { return NotFound(); }
-            return Ok(catepart);
+            List<CateParts> cateparts = db.CateParts.Where(u => u.OccupationId == id).ToList();
+            if (cateparts == null) { return NotFound("CatePart is ampty"); }
+            return Ok(cateparts);
         }
         [HttpGet]
         [Route("[Controller]/[Action]/{name}")]
-        public Boolean Duppicated(string name)
+        public bool Duppicated(string name,string id)
         {
-            Boolean flag = false;
-            CateParts catepart = db.CateParts.Where(cat => cat.Name.ToLower().Equals(name.ToLower())).FirstOrDefault();
+            bool flag = false;
+            CateParts catepart = db.CateParts.Where(cat => cat.OccupationId == id && cat.Name.ToLower().Equals(name.ToLower())).FirstOrDefault();
             if (catepart is not null) { flag = true; }
             return flag;
         }
         [HttpPost]
         [Route("[Controller]/[Action]")]
-        public IActionResult AddNew(CateParts catepart)
+        public IActionResult AddNew([FromBody] CateParts catepart)
         {
-            CateParts cateParts = db.CateParts.Find(catepart.Id);
-            bool isUser = db.Users.Any(u => u.Id == catepart.userId);
-            if (!isUser) return NotFound("User is not existing!");
-            if (cateParts is not null) { return NotFound("Catepart Id is exit"); };
-            if (!ModelState.IsValid)
+            Guid myGuids = Guid.NewGuid(); // generate ids
+            string guidStrings = myGuids.ToString();
+            DateTime currentDate = DateTime.Now;
+            bool isCate = db.Occupations.Any(o => o.Id == catepart.OccupationId);
+
+            if (isCate)
             {
-                return Ok(catepart.Name);
+                CateParts cate = new CateParts();
+                bool isOc = db.Occupations.Any(u => u.Id == catepart.OccupationId);
+                if (!isOc) return NotFound("Occupation is not existing!");
+                if (!ModelState.IsValid)
+                {
+                    return Ok(catepart.Name);
+                }
+                if (Duppicated(catepart.Name, catepart.OccupationId))
+                {
+                    ModelState.AddModelError("DupplicateCatePartsName", "CateParts Name is dupplicate");
+                    return Ok(ModelState);
+                }
+                if (catepart.Name is null) return NotFound("The field Name cannot be null!");
+                cate.Id = guidStrings;
+                cate.Name = catepart.Name;
+                cate.OccupationId = catepart.OccupationId;
+                cate.CreatedAt = currentDate;
+                db.Add(cate);
+                db.SaveChanges();
+                return Ok(1);
             }
-            if (Duppicated(catepart.Name))
-            {
-                ModelState.AddModelError("DupplicateCatePartsName", "CateParts Name is dupplicate");
-                return Ok(ModelState);
-            }
-            db.Add(catepart);
-            db.SaveChanges();
-            return Ok(catepart);
+            return Ok(0);
+           
         }
         [HttpDelete]
         [Route("[Controller]/[Action]/{id}")]

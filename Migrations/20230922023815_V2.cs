@@ -5,28 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace OnlineAptitudeTest.Migrations
 {
-    public partial class V1 : Migration
+    public partial class V2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Managers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    userId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Managers", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
@@ -66,14 +48,59 @@ namespace OnlineAptitudeTest.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Managers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    userId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Managers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Managers_Users_userId",
+                        column: x => x.userId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Occupations",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    userId = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Occupations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Occupations_Users_userId",
+                        column: x => x.userId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CateParts",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    userId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    OccupationId = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TimeOut = table.Column<int>(type: "int", nullable: false),
-                    TimeType = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    TimeOut = table.Column<int>(type: "int", nullable: true),
+                    TimeType = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -81,9 +108,9 @@ namespace OnlineAptitudeTest.Migrations
                 {
                     table.PrimaryKey("PK_CateParts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CateParts_Users_userId",
-                        column: x => x.userId,
-                        principalTable: "Users",
+                        name: "FK_CateParts_Occupations_OccupationId",
+                        column: x => x.OccupationId,
+                        principalTable: "Occupations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -134,15 +161,20 @@ namespace OnlineAptitudeTest.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CateParts_userId",
+                name: "IX_CateParts_OccupationId",
                 table: "CateParts",
-                column: "userId");
+                column: "OccupationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Managers_userId",
                 table: "Managers",
                 column: "userId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Occupations_userId",
+                table: "Occupations",
+                column: "userId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuestionHistories_QuestionId",
@@ -179,6 +211,9 @@ namespace OnlineAptitudeTest.Migrations
 
             migrationBuilder.DropTable(
                 name: "CateParts");
+
+            migrationBuilder.DropTable(
+                name: "Occupations");
 
             migrationBuilder.DropTable(
                 name: "Users");

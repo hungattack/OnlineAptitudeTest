@@ -35,27 +35,53 @@ namespace OnlineAptitudeTest.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TimeOut")
+                    b.Property<string>("OccupationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("TimeOut")
                         .HasColumnType("int");
 
                     b.Property<string>("TimeType")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.HasKey("Id");
+
+                    b.HasIndex("OccupationId");
+
+                    b.ToTable("CateParts");
+                });
+
+            modelBuilder.Entity("OnlineAptitudeTest.Model.Occupation", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("userId")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("userId");
 
-                    b.ToTable("CateParts");
+                    b.ToTable("Occupations");
                 });
 
             modelBuilder.Entity("OnlineAptitudeTest.Model.Question", b =>
@@ -241,6 +267,17 @@ namespace OnlineAptitudeTest.Migrations
 
             modelBuilder.Entity("OnlineAptitudeTest.Model.CateParts", b =>
                 {
+                    b.HasOne("OnlineAptitudeTest.Model.Occupation", "occupation")
+                        .WithMany()
+                        .HasForeignKey("OccupationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("occupation");
+                });
+
+            modelBuilder.Entity("OnlineAptitudeTest.Model.Occupation", b =>
+                {
                     b.HasOne("OnlineAptitudeTest.Model.User", "user")
                         .WithMany()
                         .HasForeignKey("userId")
@@ -268,6 +305,17 @@ namespace OnlineAptitudeTest.Migrations
                         .IsRequired();
 
                     b.Navigation("question");
+                });
+
+            modelBuilder.Entity("OnlineAptitudeTest.Model.RegisterManager", b =>
+                {
+                    b.HasOne("OnlineAptitudeTest.Model.User", "user")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("OnlineAptitudeTest.Model.User", b =>

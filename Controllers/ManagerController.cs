@@ -63,5 +63,6 @@ namespace OnlineAptitudeTest.Controllers
                 return StatusCode(500, "An error occurred while saving the entity changes.");
             }
         }
+       
     }
 }

@@ -11,6 +11,7 @@ namespace OnlineAptitudeTest.Model
         public DbSet<Question> Questions { get; set; }
         public DbSet<QuestionHistory> QuestionHistories { get; set; }
         public DbSet<RegisterManager> Managers { get; set; }
+        public DbSet<Occupation> Occupations { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()

@@ -11,6 +11,7 @@ namespace OnlineAptitudeTest.Model
         [StringLength(50)]
         [ForeignKey(nameof(User.Id))]
         public string userId { get; set; }
+        public virtual User? user { get; set; }
         [Required]
         [StringLength(40)]
         public string Name { get; set; }
