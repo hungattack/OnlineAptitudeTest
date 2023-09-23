@@ -15,6 +15,8 @@ namespace OnlineAptitudeTest.Model
         [Required]
         public string Name { get; set; }
         public int? TimeOut { get; set; }
+        [StringLength(20)]
+        public string? AnswerType { get; set; }
         [StringLength(10)]
         public string? TimeType { get; set; }
         [Required]

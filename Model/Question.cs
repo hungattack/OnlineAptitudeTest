@@ -17,7 +17,10 @@ namespace OnlineAptitudeTest.Model
         [StringLength(300)]
         public string? QuestionName { get; set; }
         [StringLength(300)]
+        public string? AnswerArray { get; set; }
+        [StringLength(300)]
         public string? Answer { get; set; }
+        
         [Required]
         public int Point { get; set; }
         

@@ -7,7 +7,7 @@ using System.ComponentModel;
 namespace OnlineAptitudeTest.Controllers
 {
     [ApiController]
-    [Route("/Api/")]
+    [Route("/api/")]
    
     public class QuestionController : ControllerBase
     {
@@ -28,37 +28,44 @@ namespace OnlineAptitudeTest.Controllers
         [Route("[Controller]/[Action]/{id}")]
         public IActionResult GetById(string id)
         {
-            Question question = db.Questions.Find(id);
-            if (question is null) { return NotFound(); }
-            return Ok(question);
+            if (id is null) return NotFound("Id is null");
+            List<Question> questions = db.Questions.Where(q => q.PartId == id).ToList();
+            return Ok(questions);
         }
         [HttpGet]
         [Route("[Controller]/[Action]/{name}")]
-        public Boolean Dupplicated(string name)
+        public Boolean Dupplicated(string name,string cateId)
         {
             Boolean flag = false;
-            Question question = db.Questions.Where(que => que.QuestionName.ToLower().Equals(name.ToLower())).FirstOrDefault();
+            Question question = db.Questions.Where(que => que.PartId == cateId && que.QuestionName.ToLower().Equals(name.ToLower())).FirstOrDefault();
             if (question is not null) { flag = true; }
             return flag;
         }
         [HttpGet]
         [Route("[Controller]/[Action]/{id}")]
-        public Boolean ExitCatePart(string id)
+        public bool ExitCatePart(string id)
         {
             Boolean flag = false;
-            CateParts _exitcate = db.CateParts.Where(exc => exc.Id.ToLower().Equals(id.ToLower())).FirstOrDefault();
-            if (_exitcate is not null) { flag = true; }
-            return flag;
+            bool _exitcate = db.CateParts.Any(exc => exc.Id == id);
+           
+            return _exitcate;
         }
         [HttpPost]
         [Route("[Controller]/[Action]")]
         public IActionResult Addnew(Question question)
         {
+            Question qs = new Question();
+            if (question.QuestionName is null) return NotFound("Question name cannot be null");
+            if (question.PartId is null) return NotFound("PartId cannot be null");
+            if (question.Answer is null) return NotFound("Answer cannot be null");
+            if (question.AnswerArray is null) return NotFound("AnswerArray cannot be null");
+            if (question.Point < 1) return NotFound("Point cannot be null");
+
             if (!ModelState.IsValid)
             {
                 return Ok(ModelState);
             }
-            if (Dupplicated(question.QuestionName))
+            if (Dupplicated(question.QuestionName,question.PartId))
             {
                 ModelState.AddModelError("DupplicateQuestionName", "Question Name is dupplicated!");
                 return Ok(ModelState);
@@ -67,7 +74,14 @@ namespace OnlineAptitudeTest.Controllers
             {
                 return NotFound("Catepart is not exit");
             }
-
+            Guid myGuidsx = Guid.NewGuid();
+            string guidStrings = myGuidsx.ToString();
+            qs.Id = guidStrings;
+            qs.QuestionName = question.QuestionName;
+            qs.Answer = question.Answer;
+            qs.AnswerArray = question.AnswerArray;
+            qs.PartId = question.PartId;
+            qs.Point = question.Point;
             db.Add(question);
             db.SaveChanges();
             return Ok(question);

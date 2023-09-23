@@ -8,6 +8,7 @@ namespace OnlineAptitudeTest.Model
         [Key]
         [StringLength(50)]
         public string? Id { get; set; }
+        public virtual List<CateParts>? Cates { get; set; }
         public virtual User? user { get; set; }
         [Required]
         [ForeignKey(nameof(User.Id))]

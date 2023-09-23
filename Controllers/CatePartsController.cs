@@ -67,28 +67,30 @@ namespace OnlineAptitudeTest.Controllers
                 cate.Name = catepart.Name;
                 cate.OccupationId = catepart.OccupationId;
                 cate.CreatedAt = currentDate;
+                cate.AnswerType = "array";
                 db.Add(cate);
                 db.SaveChanges();
-                return Ok(1);
+                return Ok(new {id = cate.Id});
             }
-            return Ok(0);
+            return Ok(isCate);
            
         }
         [HttpDelete]
-        [Route("[Controller]/[Action]/{id}")]
-        public IActionResult Delete(string id)
+        [Route("[Controller]/[Action]/{id}/{occupationId}")]
+        public IActionResult Delete(string id,string occupationId)
         {
-            CateParts cateParts = db.CateParts.Find(id);
-            if (cateParts is null) { return NotFound(); };
-            var question = db.Questions.Where(c => c.PartId == cateParts.Id).ToList();    
-            if(question is null) { return NotFound(); } 
+            if (id is null) return NotFound("Id can not be null");
+            if (occupationId is null) return NotFound("occupationId can not be null");
+            CateParts isCate = db.CateParts.Single(c => c.Id == id && c.OccupationId == occupationId);
+            if (isCate is null) { return NotFound("Cate is empty"); };
+            var question = db.Questions.Where(q => q.PartId == isCate.Id).ToList();
+            db.CateParts.Remove(isCate);
             foreach (var question1 in question)
             {
                 db.Questions.Remove(question1);
             }
-            db.CateParts.Remove(cateParts);
             db.SaveChanges();
-            return Ok("Delete cpmplete");
+            return Ok(new {id = isCate.Id});
 
         }
         [HttpPut]
