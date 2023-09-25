@@ -29,7 +29,7 @@ namespace OnlineAptitudeTest.Controllers
         public IActionResult GetById(string id)
         {
             if (id is null) return NotFound("Id is null");
-            List<Question> questions = db.Questions.Where(q => q.PartId == id).ToList();
+            List<Question> questions = db.Questions.Where(q => q.PartId == id).OrderByDescending(q => q.CreatedAt).ToList();
             return Ok(questions);
         }
         [HttpGet]
@@ -74,6 +74,7 @@ namespace OnlineAptitudeTest.Controllers
             {
                 return NotFound("Catepart is not exit");
             }
+            DateTime currentDate = DateTime.Now;
             Guid myGuidsx = Guid.NewGuid();
             string guidStrings = myGuidsx.ToString();
             qs.Id = guidStrings;
@@ -82,19 +83,20 @@ namespace OnlineAptitudeTest.Controllers
             qs.AnswerArray = question.AnswerArray;
             qs.PartId = question.PartId;
             qs.Point = question.Point;
-            db.Add(question);
+            qs.CreatedAt = currentDate;
+            db.Add(qs);
             db.SaveChanges();
-            return Ok(question);
+            return Ok(qs.Id);
         }
         [HttpDelete]
-        [Route("[Controller]/[Action]/{id}")]
-        public IActionResult Delete(string id)
+        [Route("[Controller]/[Action]/{id}/{partId}")]
+        public IActionResult Delete(string id,string partId)
         {
-            Question question = db.Questions.Find(id);
+            Question question = db.Questions.Single(q => q.Id == id && q.PartId == partId);
             if(question is null) { return NotFound(); };
             db.Questions.Remove(question);  
             db.SaveChanges();
-            return Ok("Delete Complete");
+            return Ok(true);
 
         }
         [HttpPut]
