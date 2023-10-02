@@ -1,14 +1,11 @@
-﻿using OnlineAptitudeTest.Model;
-using Microsoft.AspNetCore.Mvc;
-using System.Data.Common;
-using System.Text.Json;
-using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Mvc;
+using OnlineAptitudeTest.Model;
 
 namespace OnlineAptitudeTest.Controllers
 {
     [ApiController]
     [Route("/api/")]
-   
+
     public class QuestionController : ControllerBase
     {
         private readonly AptitudeTestDbText? db;
@@ -25,16 +22,21 @@ namespace OnlineAptitudeTest.Controllers
             return questions;
         }
         [HttpGet]
-        [Route("[Controller]/[Action]/{id}")]
-        public IActionResult GetById(string id)
+        [Route("[Controller]/[Action]/{id}/{type}")]
+        public IActionResult GetById(string id, string type)
         {
-            if (id is null) return NotFound("Id is null");
-            List<Question> questions = db.Questions.Where(q => q.PartId == id).OrderByDescending(q => q.CreatedAt).ToList();
-            return Ok(questions);
+            if (type.Contains("array") || type.Contains("string"))
+            {
+                if (id is null) return NotFound("Id is null");
+                List<Question> questions = db.Questions.Where(q => q.PartId == id && q.AnswerType == type).OrderByDescending(q => q.CreatedAt).ToList();
+                return Ok(questions);
+
+            }
+            return NotFound("AnswerType not found");
         }
         [HttpGet]
         [Route("[Controller]/[Action]/{name}")]
-        public Boolean Dupplicated(string name,string cateId)
+        public Boolean Dupplicated(string name, string cateId)
         {
             Boolean flag = false;
             Question question = db.Questions.Where(que => que.PartId == cateId && que.QuestionName.ToLower().Equals(name.ToLower())).FirstOrDefault();
@@ -47,29 +49,22 @@ namespace OnlineAptitudeTest.Controllers
         {
             Boolean flag = false;
             bool _exitcate = db.CateParts.Any(exc => exc.Id == id);
-           
+
             return _exitcate;
         }
         [HttpPost]
         [Route("[Controller]/[Action]")]
         public IActionResult Addnew(Question question)
+
         {
             Question qs = new Question();
             if (question.QuestionName is null) return NotFound("Question name cannot be null");
+            if (question.AnswerType is null) return NotFound("AnswerType cannot be null");
             if (question.PartId is null) return NotFound("PartId cannot be null");
-            if (question.Answer is null) return NotFound("Answer cannot be null");
-            if (question.AnswerArray is null) return NotFound("AnswerArray cannot be null");
+            if (question.Answer is null && question.AnswerType.Contains("array")) return NotFound("Answer cannot be null");
+            if (question.AnswerArray is null && question.AnswerType.Contains("array")) return NotFound("AnswerArray cannot be null");
             if (question.Point < 1) return NotFound("Point cannot be null");
 
-            if (!ModelState.IsValid)
-            {
-                return Ok(ModelState);
-            }
-            if (Dupplicated(question.QuestionName,question.PartId))
-            {
-                ModelState.AddModelError("DupplicateQuestionName", "Question Name is dupplicated!");
-                return Ok(ModelState);
-            }
             if (!ExitCatePart(question.PartId))
             {
                 return NotFound("Catepart is not exit");
@@ -79,53 +74,63 @@ namespace OnlineAptitudeTest.Controllers
             string guidStrings = myGuidsx.ToString();
             qs.Id = guidStrings;
             qs.QuestionName = question.QuestionName;
-            qs.Answer = question.Answer;
+            if (!question.AnswerType.Contains("string"))
+            {
+                qs.Answer = question.Answer;
+            }
+
+            qs.AnswerType = question.AnswerType;
             qs.AnswerArray = question.AnswerArray;
             qs.PartId = question.PartId;
             qs.Point = question.Point;
             qs.CreatedAt = currentDate;
             db.Add(qs);
             db.SaveChanges();
-            return Ok(qs.Id);
+            return Ok("ok");
         }
         [HttpDelete]
         [Route("[Controller]/[Action]/{id}/{partId}")]
-        public IActionResult Delete(string id,string partId)
+        public IActionResult Delete(string id, string partId)
         {
             Question question = db.Questions.Single(q => q.Id == id && q.PartId == partId);
-            if(question is null) { return NotFound(); };
-            db.Questions.Remove(question);  
+            if (question is null) { return NotFound(); };
+            db.Questions.Remove(question);
             db.SaveChanges();
             return Ok(true);
 
         }
         [HttpPut]
         [Route("[Controller]/[Action]")]
-        public IActionResult Update(Question question)
+        public IActionResult Update([FromBody] UpdataQuestion updataQuestion)
         {
-            Question _question = db.Questions.Find(question.Id);
-            
-            if (_question is null)
+            bool isOc = db.Occupations.Any(o => o.Id == updataQuestion.OccupationId && o.userId == updataQuestion.UserId);
+            if (isOc)
             {
-                return NotFound("Question not found");
-            }
-            if (!ModelState.IsValid)
-            {
-                return Ok(ModelState);
-            }
-            if (!ExitCatePart(question.PartId))
-            {
+                bool isCate = db.CateParts.Any(c => c.Id == updataQuestion.PartId);
+                if (isCate)
+                {
+                    Question question = db.Questions.SingleOrDefault(q => q.Id == updataQuestion.Id);
+                    if (question != null)
+                    {
+                        DateTime currentDate = DateTime.Now;
+                        question.QuestionName = updataQuestion.QuestionName;
+                        if (updataQuestion.Type == "array")
+                        {
+                            question.AnswerArray = updataQuestion.AnswerArray;
+                            question.Answer = updataQuestion.Answer;
+                        }
+                        question.Point = updataQuestion.Point;
+                        question.UpdatedAt = currentDate;
+                        db.Questions.Update(question);
+                        db.SaveChanges();
+                        return Ok(true);
+                    }
+                    return NotFound("Question not found");
+                }
                 return NotFound("Catepart is not exit");
             }
-            _question.PartId = question.PartId;
-            _question.QuestionName = question.QuestionName;
-            _question.Answer = question.Answer;
-            _question.Point = question.Point;
-            _question.UpdatedAt = DateTime.Now;
+            return NotFound("Occupation is not exit");
 
-            db.Questions.Update(_question);
-            db.SaveChanges();
-            return Ok("Question update complete");
         }
     }
 }

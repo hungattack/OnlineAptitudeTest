@@ -10,12 +10,13 @@ namespace OnlineAptitudeTest.Model
         public string? Id { get; set; }
         public virtual List<CateParts>? Cates { get; set; }
         public virtual User? user { get; set; }
-        [Required]
         [ForeignKey(nameof(User.Id))]
-        public string userId { get; set; }
-        [Required]
+        public string? userId { get; set; }
         [StringLength(40)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
+        [Column(TypeName = "text")]
+        public string? Info { get; set; }
+        public bool Active { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

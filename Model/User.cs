@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineAptitudeTest.Model
@@ -18,12 +17,12 @@ namespace OnlineAptitudeTest.Model
         [Required]
         [StringLength(250)]
         public string Password { get; set; }
+        public virtual Roles? roles { get; set; }
         [StringLength(50)]
         [ForeignKey(nameof(Roles.Id))]
         public string? RoleId { get; set; }
-        public virtual Roles? roles { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-       
+
     }
 }

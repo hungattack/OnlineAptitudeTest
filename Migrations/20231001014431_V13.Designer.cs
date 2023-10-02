@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineAptitudeTest.Model;
 
@@ -11,9 +12,10 @@ using OnlineAptitudeTest.Model;
 namespace OnlineAptitudeTest.Migrations
 {
     [DbContext(typeof(AptitudeTestDbText))]
-    partial class AptitudeTestDbTextModelSnapshot : ModelSnapshot
+    [Migration("20231001014431_V13")]
+    partial class V13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,9 +104,6 @@ namespace OnlineAptitudeTest.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<bool>("Start")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -113,10 +112,6 @@ namespace OnlineAptitudeTest.Migrations
                         .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("managerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("occupationId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

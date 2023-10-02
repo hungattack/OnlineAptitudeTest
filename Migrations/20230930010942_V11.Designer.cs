@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineAptitudeTest.Model;
 
@@ -11,9 +12,10 @@ using OnlineAptitudeTest.Model;
 namespace OnlineAptitudeTest.Migrations
 {
     [DbContext(typeof(AptitudeTestDbText))]
-    partial class AptitudeTestDbTextModelSnapshot : ModelSnapshot
+    [Migration("20230930010942_V11")]
+    partial class V11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,10 +65,6 @@ namespace OnlineAptitudeTest.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Address")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
                     b.Property<string>("BirthDay")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -102,9 +100,6 @@ namespace OnlineAptitudeTest.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<bool>("Start")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -113,10 +108,6 @@ namespace OnlineAptitudeTest.Migrations
                         .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("managerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("occupationId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -136,9 +127,6 @@ namespace OnlineAptitudeTest.Migrations
                     b.Property<string>("Id")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");

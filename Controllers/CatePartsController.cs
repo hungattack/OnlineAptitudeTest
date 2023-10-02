@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
 using OnlineAptitudeTest.Model;
-using System.Collections;
 
 namespace OnlineAptitudeTest.Controllers
 {
@@ -32,7 +29,7 @@ namespace OnlineAptitudeTest.Controllers
         }
         [HttpGet]
         [Route("[Controller]/[Action]/{name}")]
-        public bool Duppicated(string name,string id)
+        public bool Duppicated(string name, string id)
         {
             bool flag = false;
             CateParts catepart = db.CateParts.Where(cat => cat.OccupationId == id && cat.Name.ToLower().Equals(name.ToLower())).FirstOrDefault();
@@ -67,17 +64,16 @@ namespace OnlineAptitudeTest.Controllers
                 cate.Name = catepart.Name;
                 cate.OccupationId = catepart.OccupationId;
                 cate.CreatedAt = currentDate;
-                cate.AnswerType = "array";
                 db.Add(cate);
                 db.SaveChanges();
-                return Ok(new {id = cate.Id});
+                return Ok(new { id = cate.Id });
             }
             return Ok(isCate);
-           
+
         }
         [HttpDelete]
         [Route("[Controller]/[Action]/{id}/{occupationId}")]
-        public IActionResult Delete(string id,string occupationId)
+        public IActionResult Delete(string id, string occupationId)
         {
             if (id is null) return NotFound("Id can not be null");
             if (occupationId is null) return NotFound("occupationId can not be null");
@@ -90,20 +86,30 @@ namespace OnlineAptitudeTest.Controllers
                 db.Questions.Remove(question1);
             }
             db.SaveChanges();
-            return Ok(new {id = isCate.Id});
+            return Ok(new { id = isCate.Id });
 
         }
         [HttpPut]
         [Route("[Controller]/[Action]")]
         public IActionResult Update(CateParts catepart)
         {
-            CateParts cateparts = db.CateParts.Find(catepart.Id);
+            if (catepart.Id is null) return NotFound("Id not found");
+            if (catepart.OccupationId is null) return NotFound("OccupationId not found");
+            CateParts cateparts = db.CateParts.SingleOrDefault(c => c.Id == catepart.Id && c.OccupationId == catepart.OccupationId);
             if (cateparts is null)
             {
                 return NotFound("Catepart not found");
             }
-            cateparts.Name = catepart.Name;
-            cateparts.CreatedAt = DateTime.Now;
+
+            if (catepart.Name is not null)
+            {
+                cateparts.Name = catepart.Name;
+            }
+            if (catepart.TimeOut is not null)
+            {
+                cateparts.TimeOut = catepart.TimeOut;
+            }
+            cateparts.UpdatedAt = DateTime.Now;
 
             db.CateParts.Update(cateparts);
             db.SaveChanges();

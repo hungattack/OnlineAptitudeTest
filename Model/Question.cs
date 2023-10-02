@@ -20,10 +20,12 @@ namespace OnlineAptitudeTest.Model
         public string? AnswerArray { get; set; }
         [StringLength(300)]
         public string? Answer { get; set; }
-        
+        [StringLength(20)]
+        public string? AnswerType { get; set; }
+
         [Required]
         public int Point { get; set; }
-        
+
         [Required]
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
