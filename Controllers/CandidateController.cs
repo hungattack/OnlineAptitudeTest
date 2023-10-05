@@ -92,7 +92,7 @@ namespace OnlineAptitudeTest.Controllers
             if (condidate.Password is null) return NotFound("Password is not found");
             if (condidate.occupationId is null) return NotFound("occupationId is not found");
             if (condidate.userId is null) return NotFound("userId is not found");
-            Condidate c = db.Condidates.SingleOrDefault(c => c.UserName == condidate.UserName);
+            Condidate c = db.Condidates.SingleOrDefault(c => c.UserName == condidate.UserName && c.occupationId == condidate.occupationId);
             if (c == null)
             {
                 Condidate ca = db.Condidates.SingleOrDefault(c => c.Id == condidate.Id && c.occupationId == condidate.occupationId && c.userId == condidate.userId);
@@ -102,11 +102,23 @@ namespace OnlineAptitudeTest.Controllers
                     ca.Password = condidate.Password;
                     db.Condidates.Update(ca);
                     db.SaveChanges();
-
+                    return Ok("ok");
                 }
-                return Ok("ok");
             }
-            return Ok("Candidate was exsiting");
+            return NotFound("Candidate was exsiting");
+        }
+        [HttpPost]
+        public IActionResult Login([FromBody] Condidate condidate)
+        {
+            if (condidate.UserName == null || condidate.Password == null || condidate.occupationId == null) return NotFound("User name or Password can't be null!");
+            Condidate c = db.Condidates.SingleOrDefault(c => c.occupationId == condidate.occupationId && c.UserName == condidate.UserName && c.Password == condidate.Password);
+            if (c == null) return NotFound("User name or Password was wrong!");
+            DateTime currentDate = DateTime.Now;
+            c.Start = true;
+            c.UpdatedAt = currentDate;
+            db.Condidates.Update(c);
+            db.SaveChanges();
+            return Ok("ok");
         }
     }
 }

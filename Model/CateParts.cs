@@ -12,6 +12,7 @@ namespace OnlineAptitudeTest.Model
         [Required]
         [ForeignKey(nameof(Occupation.Id))]
         public string OccupationId { get; set; }
+        public virtual List<Question>? Questions { get; set; }
         public string? Name { get; set; }
         public int? TimeOut { get; set; }
 
