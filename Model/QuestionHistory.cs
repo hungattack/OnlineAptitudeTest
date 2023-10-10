@@ -7,16 +7,12 @@ namespace OnlineAptitudeTest.Model
     {
         [Key]
         [StringLength(50)]
-
-        public string UserId { get; set; }
-        public virtual Question? question { get; set; }
+        public int Id { get; set; }
+        [ForeignKey(nameof(User.Id))]
+        public string userId { get; set; }
         [Required]
-        [ForeignKey(nameof(Question.Id))]
-        public string QuestionId { get; set; }
-        [Required]
-        [StringLength(300)]
-        public string Answer { get; set; }
-        public bool IsCorrect { get; set; }
+        [ForeignKey(nameof(Occupation.Id))]
+        public string occupationId { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

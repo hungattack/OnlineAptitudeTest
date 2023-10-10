@@ -14,8 +14,7 @@ namespace OnlineAptitudeTest.Model
         public string? userId { get; set; }
         [StringLength(40)]
         public string? Name { get; set; }
-        [Column(TypeName = "text")]
-        public string? Info { get; set; }
+        public List<Info>? infos { get; set; }
         public bool Active { get; set; }
         [Required]
         public DateTime CreatedAt { get; set; }

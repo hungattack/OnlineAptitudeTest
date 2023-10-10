@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineAptitudeTest.Model;
 
@@ -11,9 +12,10 @@ using OnlineAptitudeTest.Model;
 namespace OnlineAptitudeTest.Migrations
 {
     [DbContext(typeof(AptitudeTestDbText))]
-    partial class AptitudeTestDbTextModelSnapshot : ModelSnapshot
+    [Migration("20231009031113_V19")]
+    partial class V19
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,61 +126,6 @@ namespace OnlineAptitudeTest.Migrations
                     b.ToTable("Condidates");
                 });
 
-            modelBuilder.Entity("OnlineAptitudeTest.Model.Info", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Company")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Contact")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Introduction")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Requirement")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("occupationId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("infos");
-                });
-
             modelBuilder.Entity("OnlineAptitudeTest.Model.Occupation", b =>
                 {
                     b.Property<string>("Id")
@@ -190,6 +137,9 @@ namespace OnlineAptitudeTest.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Info")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(40)
@@ -323,40 +273,6 @@ namespace OnlineAptitudeTest.Migrations
                         .IsUnique();
 
                     b.ToTable("Managers");
-                });
-
-            modelBuilder.Entity("OnlineAptitudeTest.Model.ResultHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Answer")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("catePartId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("occupaionId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("questionHisId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("resultHistories");
                 });
 
             modelBuilder.Entity("OnlineAptitudeTest.Model.Roles", b =>

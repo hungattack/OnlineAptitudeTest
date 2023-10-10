@@ -46,9 +46,9 @@ namespace OnlineAptitudeTest.Controllers
         {
             if (id is null) return NotFound("Id is empty");
 
-            Occupation occupation = db.Occupations.Single(u => u.Id == id);
+            List<Info> infos = db.infos.Where(u => u.occupationId == id).ToList();
             // Serialize your object using the JsonSerializerOptions
-            return Ok(occupation.Info);
+            return Ok(infos);
         }
         [HttpGet]
         public Boolean Duppicated(string name, string id)
@@ -150,27 +150,54 @@ namespace OnlineAptitudeTest.Controllers
             db.Occupations.Remove(occupation); db.SaveChanges();
             return Ok(new { id = id });
         }
-        [HttpPost]
-        public IActionResult AddInfo([FromBody] Occupation occupation)
+        [HttpDelete]
+        [Route("{id}/{occupationId}")]
+        public async Task<IActionResult> DeleteInfo(int id, string occupationId)
         {
-            if (occupation.Id == null) return NotFound("Id not found");
-            if (occupation.Info == null) return NotFound("Info no found");
-            Occupation oc = db.Occupations.SingleOrDefault(o => o.Id == occupation.Id);
+            if (id < 0) return NotFound("Id is empty");
+            if (occupationId is null) return NotFound("occupationId is empty");
+            Occupation occupation = await db.Occupations.SingleAsync(u => u.Id == occupationId);
+            if (occupation == null) return NotFound("Occupation is null");
+            Info info = await db.infos.SingleOrDefaultAsync(i => i.Id == id && i.occupationId == occupationId);
+            if (info == null) return NotFound("info is null");
+            db.infos.Remove(info); db.SaveChanges();
+            return Ok("ok");
+        }
+        [HttpPost]
+        public IActionResult AddInfo([FromBody] Info info)
+        {
+            if (info.occupationId == null) return NotFound("occupationId not found");
+            if (info.Requirement == null) return NotFound("Requirement not found");
+            if (info.Introduction == null) return NotFound("Introduction not found");
+            if (info.Position == null) return NotFound("Position no found");
+            if (info.Address == null) return NotFound("Address no found");
+            if (info.Contact == null) return NotFound("Contact no found");
+            if (info.Name == null) return NotFound("Name no found");
+            if (info.Company == null) return NotFound("Company no found");
+            Occupation oc = db.Occupations.SingleOrDefault(o => o.Id == info.occupationId);
             if (oc == null) return NotFound("Occupation not found");
-            oc.Info = occupation.Info;
-            db.Occupations.Update(oc);
+            Info ifo = new Info();
+            ifo.occupationId = info.occupationId;
+            ifo.Position = info.Position;
+            ifo.Address = info.Address;
+            ifo.Company = info.Company;
+            ifo.Contact = info.Contact;
+            ifo.Name = info.Name;
+            ifo.Requirement = info.Requirement;
+            ifo.Introduction = info.Introduction;
+            db.infos.Add(ifo);
             db.SaveChanges();
             return Ok("ok");
         }
         [HttpGet]
         public IActionResult GetListing()
         {
+            List<Occupation> occupations = new List<Occupation>();
             List<Occupation> occupation = db.Occupations.Where(o => o.Active == true).Include(u => u.user).Select(o => new Occupation
             {
                 // Include other properties of Occupation that you need
                 Id = o.Id,
                 Name = o.Name,
-                Info = o.Info,
                 CreatedAt = o.CreatedAt,
                 user = new User
                 {
@@ -181,8 +208,15 @@ namespace OnlineAptitudeTest.Controllers
                     // Add more user properties if needed
                 }
             })
-                .ToList();
-            return Ok(occupation);
+                 .ToList();
+            foreach (Occupation o in occupation)
+            {
+                List<Info> infos = db.infos.Where(i => i.occupationId == o.Id).ToList();
+                o.infos = infos;
+                occupations.Add(o);
+            }
+
+            return Ok(occupations);
         }
         [HttpPatch]
         [Route("{occupationId}/{userId}")]

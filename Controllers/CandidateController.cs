@@ -118,7 +118,7 @@ namespace OnlineAptitudeTest.Controllers
             c.UpdatedAt = currentDate;
             db.Condidates.Update(c);
             db.SaveChanges();
-            return Ok("ok");
+            return Ok(c.Start);
         }
     }
 }

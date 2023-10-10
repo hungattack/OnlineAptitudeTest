@@ -56,17 +56,18 @@ namespace OnlineAptitudeTest.Controllers
                 }
                 if (Duppicated(catepart.Name, catepart.OccupationId))
                 {
-                    ModelState.AddModelError("DupplicateCatePartsName", "CateParts Name is dupplicate");
-                    return Ok(ModelState);
+                    return Ok("CateParts Name is dupplicate");
                 }
                 if (catepart.Name is null) return NotFound("The field Name cannot be null!");
                 cate.Id = guidStrings;
                 cate.Name = catepart.Name;
+                cate.TimeOut = 20;
+                cate.TimeType = "Minute";
                 cate.OccupationId = catepart.OccupationId;
                 cate.CreatedAt = currentDate;
                 db.Add(cate);
                 db.SaveChanges();
-                return Ok(new { id = cate.Id });
+                return Ok(new { cate });
             }
             return Ok(isCate);
 
@@ -108,6 +109,10 @@ namespace OnlineAptitudeTest.Controllers
             if (catepart.TimeOut is not null)
             {
                 cateparts.TimeOut = catepart.TimeOut;
+            }
+            if (catepart.TimeType is not null)
+            {
+                cateparts.TimeType = catepart.TimeType;
             }
             cateparts.UpdatedAt = DateTime.Now;
 
