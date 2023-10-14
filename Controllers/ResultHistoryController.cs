@@ -74,5 +74,23 @@ namespace OnlineAptitudeTest.Controllers
             }
             return NotFound(new { status = 0, message = "resultHistory had existed" });
         }
+         public IActionResult Filter(string id)
+        {
+            var query = from rh in db.resultHistories
+                        join qh in db.QuestionHistories on rh.questionHisId equals qh.Id
+                        where qh.userId == id
+                        select new ResultHistory
+                        {
+                            Id = rh.Id,
+                            occupaionId = rh.occupaionId,
+                            questionHisId = rh.questionHisId,
+                            catePartId = rh.catePartId,
+                            Answer = rh.Answer,
+                            CreatedAt = rh.CreatedAt,
+                            UpdatedAt = rh.UpdatedAt,
+                        };
+            var result = query.ToList();
+            return Ok(result);
+        }
     }
 }
