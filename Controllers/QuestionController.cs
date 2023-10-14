@@ -63,7 +63,7 @@ namespace OnlineAptitudeTest.Controllers
             if (question.PartId is null) return NotFound("PartId cannot be null");
             if (question.Answer is null && question.AnswerType.Contains("array")) return NotFound("Answer cannot be null");
             if (question.AnswerArray is null && question.AnswerType.Contains("array")) return NotFound("AnswerArray cannot be null");
-            if (question.Point < 1) return NotFound("Point cannot be null");
+            if (question.PointAr is null) return NotFound("Point cannot be null");
 
             if (!ExitCatePart(question.PartId))
             {
@@ -82,7 +82,7 @@ namespace OnlineAptitudeTest.Controllers
             qs.AnswerType = question.AnswerType;
             qs.AnswerArray = question.AnswerArray;
             qs.PartId = question.PartId;
-            qs.Point = question.Point;
+            qs.PointAr = question.PointAr;
             qs.CreatedAt = currentDate;
             db.Add(qs);
             db.SaveChanges();
@@ -97,7 +97,6 @@ namespace OnlineAptitudeTest.Controllers
             db.Questions.Remove(question);
             db.SaveChanges();
             return Ok(true);
-
         }
         [HttpPut]
         [Route("[Controller]/[Action]")]
@@ -119,7 +118,7 @@ namespace OnlineAptitudeTest.Controllers
                             question.AnswerArray = updataQuestion.AnswerArray;
                             question.Answer = updataQuestion.Answer;
                         }
-                        question.Point = updataQuestion.Point;
+                        question.PointAr = updataQuestion.PointAr;
                         question.UpdatedAt = currentDate;
                         db.Questions.Update(question);
                         db.SaveChanges();

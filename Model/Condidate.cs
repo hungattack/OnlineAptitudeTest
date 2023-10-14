@@ -32,7 +32,9 @@ namespace OnlineAptitudeTest.Model
         public string? BirthDay { get; set; }
         public string? Education { get; set; }
         public string? Experience { get; set; }
-        public bool Start { get; set; }
+        [StringLength(20)]
+        public string? Start { get; set; }
+        public bool ReTest { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

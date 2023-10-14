@@ -11,9 +11,11 @@ namespace OnlineAptitudeTest.Model
         [ForeignKey(nameof(QuestionHistory.occupationId))]
         public string occupaionId { get; set; }
         [ForeignKey(nameof(QuestionHistory.Id))]
-        public int questionHisId { get; set; }
+        public string questionHisId { get; set; }
         [ForeignKey(nameof(CateParts.Id))]
         public string catePartId { get; set; }
+        [ForeignKey(nameof(Question.Id))]
+        public string? questionId { get; set; }
         [StringLength(500)]
         public string? Answer { get; set; }
         public DateTime CreatedAt { get; set; }

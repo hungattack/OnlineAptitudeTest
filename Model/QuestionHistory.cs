@@ -7,7 +7,7 @@ namespace OnlineAptitudeTest.Model
     {
         [Key]
         [StringLength(50)]
-        public int Id { get; set; }
+        public string Id { get; set; }
         [ForeignKey(nameof(User.Id))]
         public string userId { get; set; }
         [Required]

@@ -15,7 +15,7 @@ namespace OnlineAptitudeTest.Controllers
         }
         [HttpGet]
         [Route("{userID}")]
-        public IActionResult Listing(string userId)
+        public IActionResult ListingRegisters(string userId)
         {
             User user = db.Users.SingleOrDefault(u => u.Id == userId);
             if (user != null)
@@ -25,6 +25,24 @@ namespace OnlineAptitudeTest.Controllers
                 if (roles != null && roles.Name == "admin" && roles.Permissions.Contains("read"))
                 {
                     List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId).ToList();
+                    return Ok(candidates);
+                }
+            }
+
+            return NotFound("Authorization");
+        }
+        [HttpGet]
+        [Route("{userID}")]
+        public IActionResult ListingDuration(string userId)
+        {
+            User user = db.Users.SingleOrDefault(u => u.Id == userId);
+            if (user != null)
+            {
+                Roles roles = db.Roles.SingleOrDefault(r => r.Id == user.RoleId);
+
+                if (roles != null && roles.Name == "admin" && roles.Permissions.Contains("read"))
+                {
+                    List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId && c.Start == "starting").ToList();
                     return Ok(candidates);
                 }
             }
@@ -63,6 +81,7 @@ namespace OnlineAptitudeTest.Controllers
                         cd.PhoneNumber = condidate.PhoneNumber;
                         cd.BirthDay = condidate.BirthDay;
                         cd.Education = condidate.Education;
+                        cd.Start = "ready";
                         db.Condidates.Add(cd);
                         db.SaveChanges();
                         return Ok("Add successful");
@@ -114,7 +133,7 @@ namespace OnlineAptitudeTest.Controllers
             Condidate c = db.Condidates.SingleOrDefault(c => c.occupationId == condidate.occupationId && c.UserName == condidate.UserName && c.Password == condidate.Password);
             if (c == null) return NotFound("User name or Password was wrong!");
             DateTime currentDate = DateTime.Now;
-            c.Start = true;
+            c.Start = "starting";
             c.UpdatedAt = currentDate;
             db.Condidates.Update(c);
             db.SaveChanges();

@@ -23,8 +23,8 @@ namespace OnlineAptitudeTest.Model
         [StringLength(20)]
         public string? AnswerType { get; set; }
 
-        [Required]
-        public int Point { get; set; }
+        [StringLength(300)]
+        public string? PointAr { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; }
