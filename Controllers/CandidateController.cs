@@ -33,7 +33,7 @@ namespace OnlineAptitudeTest.Controllers
         }
         [HttpGet]
         [Route("{userID}")]
-        public IActionResult ListingDuration(string userId)
+        public IActionResult ListingFinish(string userId)
         {
             User user = db.Users.SingleOrDefault(u => u.Id == userId);
             if (user != null)
@@ -137,7 +137,7 @@ namespace OnlineAptitudeTest.Controllers
             c.UpdatedAt = currentDate;
             db.Condidates.Update(c);
             db.SaveChanges();
-            return Ok(c.Start);
+            return Ok(true);
         }
     }
 }

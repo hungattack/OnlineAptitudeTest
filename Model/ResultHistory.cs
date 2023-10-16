@@ -10,6 +10,7 @@ namespace OnlineAptitudeTest.Model
         public int Id { get; set; }
         [ForeignKey(nameof(QuestionHistory.occupationId))]
         public string occupaionId { get; set; }
+        public virtual CateParts? catePart { get; set; }
         [ForeignKey(nameof(QuestionHistory.Id))]
         public string questionHisId { get; set; }
         [ForeignKey(nameof(CateParts.Id))]

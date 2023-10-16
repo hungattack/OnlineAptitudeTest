@@ -14,7 +14,7 @@
         public string? CatePartId { get; set; }
         public string? Answer { get; set; }
         public string? Result { get; set; }
-        public int? Point { get; set; }
+        public int Point { get; set; }
         public string? PointAr { get; set; }
 
     }

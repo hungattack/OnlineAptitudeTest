@@ -15,41 +15,53 @@ namespace OnlineAptitudeTest.Controllers
             this.db = db;
         }
         [HttpGet]
-        [Route("{id}")]
-        public IActionResult getRoom(string id)
+        [Route("{id}/{userId}")]
+        public IActionResult getRoom(string id, string userId)
         {
             if (id == null) return NotFound("Room code is not found!");
+            Condidate condidate = db.Condidates.SingleOrDefault(c => c.userId == userId);
+            if (condidate == null) return NotFound("This Candidate is not allowed!");
+            QuestionHistory questionHistory = db.QuestionHistories.FirstOrDefault(q => q.userId == userId && q.occupationId == id);
+            if (condidate.ReTest == true || questionHistory is null)
+            {
+                Occupation occupation = db.Occupations.Where(o => o.Id == id).Select(o => new Occupation
+                {
+                    Id = o.Id,
+                    Name = o.Name,
+                    userId = o.userId
+                }).FirstOrDefault();
+                if (occupation == null) return NotFound(" Occupation is not found");
+                User user = db.Users.Where(u => u.Id == occupation.userId).Select(o => new User
+                {
+                    Id = o.Id,
+                    Name = o.Name,
+                    Gender = o.Gender
+                }).FirstOrDefault();
+                List<CateParts> cateParts = db.CateParts.Where(c => c.OccupationId == occupation.Id).ToList();
+                foreach (var catePart in cateParts)
+                {
+                    List<Question> questions = db.Questions.Where(q => q.PartId == catePart.Id).ToList();
+                    catePart.Questions = questions;
+                }
+                occupation.user = user;
+                occupation.Cates = cateParts;
+                var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    // Add other serialization options as needed
+                };
 
-            Occupation occupation = db.Occupations.Where(o => o.Id == id).Select(o => new Occupation
-            {
-                Id = o.Id,
-                Name = o.Name,
-                userId = o.userId
-            }).FirstOrDefault();
-            if (occupation == null) return NotFound(" Occupation is not found");
-            User user = db.Users.Where(u => u.Id == occupation.userId).Select(o => new User
-            {
-                Id = o.Id,
-                Name = o.Name,
-                Gender = o.Gender
-            }).FirstOrDefault();
-            List<CateParts> cateParts = db.CateParts.Where(c => c.OccupationId == occupation.Id).ToList();
-            foreach (var catePart in cateParts)
-            {
-                List<Question> questions = db.Questions.Where(q => q.PartId == catePart.Id).ToList();
-                catePart.Questions = questions;
+                // Serialize your object using the JsonSerializerOptions
+                string json = JsonSerializer.Serialize(occupation, options);
+                return Ok(json);
+
             }
-            occupation.user = user;
-            occupation.Cates = cateParts;
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                // Add other serialization options as needed
-            };
 
-            // Serialize your object using the JsonSerializerOptions
-            string json = JsonSerializer.Serialize(occupation, options);
-            return Ok(json);
+            else
+            {
+                return Ok("This candidate had finished the exam!");
+            }
+
         }
     }
 }

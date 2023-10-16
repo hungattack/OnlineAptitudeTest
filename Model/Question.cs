@@ -16,9 +16,9 @@ namespace OnlineAptitudeTest.Model
         [Required]
         [StringLength(300)]
         public string? QuestionName { get; set; }
-        [StringLength(300)]
+        [Column(TypeName = "text")]
         public string? AnswerArray { get; set; }
-        [StringLength(300)]
+        [Column(TypeName = "text")]
         public string? Answer { get; set; }
         [StringLength(20)]
         public string? AnswerType { get; set; }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineAptitudeTest.Model;
 
@@ -11,9 +12,10 @@ using OnlineAptitudeTest.Model;
 namespace OnlineAptitudeTest.Migrations
 {
     [DbContext(typeof(AptitudeTestDbText))]
-    partial class AptitudeTestDbTextModelSnapshot : ModelSnapshot
+    [Migration("20231016143951_V32")]
+    partial class V32
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,6 +40,9 @@ namespace OnlineAptitudeTest.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("QuestionHistoryId")
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<int?>("TimeOut")
                         .HasColumnType("int");
 
@@ -51,6 +56,8 @@ namespace OnlineAptitudeTest.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OccupationId");
+
+                    b.HasIndex("QuestionHistoryId");
 
                     b.ToTable("CateParts");
                 });
@@ -276,9 +283,6 @@ namespace OnlineAptitudeTest.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("pointAll")
-                        .HasColumnType("int");
-
                     b.Property<string>("userId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -454,6 +458,10 @@ namespace OnlineAptitudeTest.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("OnlineAptitudeTest.Model.QuestionHistory", null)
+                        .WithMany("cateParts")
+                        .HasForeignKey("QuestionHistoryId");
+
                     b.Navigation("occupation");
                 });
 
@@ -560,6 +568,8 @@ namespace OnlineAptitudeTest.Migrations
             modelBuilder.Entity("OnlineAptitudeTest.Model.QuestionHistory", b =>
                 {
                     b.Navigation("Results");
+
+                    b.Navigation("cateParts");
                 });
 #pragma warning restore 612, 618
         }
