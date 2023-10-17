@@ -139,5 +139,29 @@ namespace OnlineAptitudeTest.Controllers
             db.SaveChanges();
             return Ok(c.Start);
         }
-    }
+		[HttpPut]
+		[Route("{userId}")]
+		public IActionResult UpdateRetest(string userId, string candidateId, [FromBody] bool retest)
+		{
+			User user = db.Users.SingleOrDefault(u => u.Id == userId);
+			if (user != null)
+			{
+				Roles roles = db.Roles.SingleOrDefault(r => r.Id == user.RoleId);
+
+				if (roles != null && roles.Name == "admin" && roles.Permissions.Contains("write"))
+				{
+					Condidate candidate = db.Condidates.SingleOrDefault(c => c.userId == candidateId);
+					if (candidate != null)
+					{
+						candidate.ReTest = retest;
+						db.Condidates.Update(candidate);
+						db.SaveChanges();
+						return Ok("Update successful");
+					}
+				}
+			}
+
+			return NotFound("Authorization");
+		}
+	}
 }
