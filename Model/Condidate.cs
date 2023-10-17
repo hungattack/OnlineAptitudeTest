@@ -34,7 +34,8 @@ namespace OnlineAptitudeTest.Model
         public string? Experience { get; set; }
         [StringLength(20)]
         public string? Start { get; set; }
-        public bool ReTest { get; set; }
+        [ForeignKey(nameof(Occupation.Id))]
+        public string? ReTest { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

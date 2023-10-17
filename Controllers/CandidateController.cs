@@ -42,7 +42,7 @@ namespace OnlineAptitudeTest.Controllers
 
                 if (roles != null && roles.Name == "admin" && roles.Permissions.Contains("read"))
                 {
-                    List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId && c.Start == "starting").ToList();
+                    List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId && c.Start == "end").ToList();
                     return Ok(candidates);
                 }
             }
@@ -82,6 +82,7 @@ namespace OnlineAptitudeTest.Controllers
                         cd.BirthDay = condidate.BirthDay;
                         cd.Education = condidate.Education;
                         cd.Start = "ready";
+                        cd.ReTest = null;
                         db.Condidates.Add(cd);
                         db.SaveChanges();
                         return Ok("Add successful");
@@ -104,6 +105,19 @@ namespace OnlineAptitudeTest.Controllers
             return Ok("ok");
         }
         [HttpPut]
+        [Route("{manaId}/{userId}")]
+        public IActionResult Finish(string manaId, string userId)
+        {
+            if (manaId == null || userId == null) return NotFound("manaId or userId are not found!");
+            Condidate condidate = db.Condidates.FirstOrDefault(c => c.managerId == manaId && c.userId == userId);
+            if (condidate == null) return NotFound("Candidate is not found");
+            condidate.ReTest = null;
+            condidate.Start = "end";
+            db.Condidates.Update(condidate);
+            db.SaveChanges();
+            return Ok("ok");
+        }
+        [HttpPut]
         public IActionResult Generate([FromBody] Condidate condidate)
         {
             if (condidate.UserName is null) return NotFound("UserName is not found");
@@ -119,6 +133,7 @@ namespace OnlineAptitudeTest.Controllers
                 {
                     ca.UserName = condidate.UserName;
                     ca.Password = condidate.Password;
+                    ca.Start = "generated";
                     db.Condidates.Update(ca);
                     db.SaveChanges();
                     return Ok("ok");

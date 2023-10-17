@@ -15,9 +15,7 @@ namespace OnlineAptitudeTest.Model
         public string questionHisId { get; set; }
         [ForeignKey(nameof(CateParts.Id))]
         public string catePartId { get; set; }
-        [ForeignKey(nameof(Question.Id))]
-        public string? questionId { get; set; }
-        [StringLength(500)]
+        [Column(TypeName = "text")]
         public string? Answer { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

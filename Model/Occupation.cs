@@ -9,7 +9,7 @@ namespace OnlineAptitudeTest.Model
         [StringLength(50)]
         public string? Id { get; set; }
         public virtual List<CateParts>? Cates { get; set; }
-        public virtual User? user { get; set; }
+        public virtual User? user { get; set; } // of manager
         [ForeignKey(nameof(User.Id))]
         public string? userId { get; set; }
         [StringLength(40)]
