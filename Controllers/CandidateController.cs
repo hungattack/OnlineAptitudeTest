@@ -154,5 +154,33 @@ namespace OnlineAptitudeTest.Controllers
             db.SaveChanges();
             return Ok(true);
         }
+        [HttpPut]
+        [Route("{userId}/{manaId}/{idReTest}")]
+        public IActionResult UpdateRetest(string userId, string manaId, string idReTest)
+        {
+            if (manaId is null) return NotFound("ManagerID is empty!");
+            if (userId is null) return NotFound("CandidateId is empty!");
+            if (idReTest is null) return NotFound("idReTest is empty!");
+            User user = db.Users.SingleOrDefault(u => u.Id == manaId);
+            if (user != null)
+            {
+                Roles roles = db.Roles.SingleOrDefault(r => r.Id == user.RoleId);
+
+                if (roles != null && roles.Name == "admin" && roles.Permissions.Contains("update"))
+                {
+                    Condidate candidate = db.Condidates.SingleOrDefault(c => c.userId == userId && c.managerId == user.Id);
+                    if (candidate != null)
+                    {
+                        candidate.ReTest = idReTest;
+                        db.Condidates.Update(candidate);
+                        db.SaveChanges();
+                        return Ok("ok");
+                    }
+                }
+            }
+
+            return NotFound("Authorization");
+        }
     }
 }
+

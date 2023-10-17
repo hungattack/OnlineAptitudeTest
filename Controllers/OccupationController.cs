@@ -67,8 +67,13 @@ namespace OnlineAptitudeTest.Controllers
             if (occupation is null) { return NotFound("occupation is empty!"); };
 
             Occupation oc = new Occupation();
-            bool isUser = db.Users.Include(u => u.roles).Any(u => u.Id == occupation.userId && u.roles.Name == "admin" && u.roles.Permissions.Contains("write"));
-            if (!isUser) return NotFound("User is not existing!");
+            User isUser = db.Users.SingleOrDefault(u => u.Id == occupation.userId);
+            if (isUser is null) return NotFound("User is not existing!");
+            Roles roles = db.Roles.SingleOrDefault(r => r.Id == isUser.RoleId);
+            if (roles is null) return NotFound("You have no any permission");
+            if (roles.Name != "admin") return NotFound("You're not admin");
+            if (!roles.Permissions.Contains("create")) return NotFound("You have no permission to create");
+
             if (!ModelState.IsValid)
             {
                 return Ok(occupation.Name);
