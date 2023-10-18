@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineAptitudeTest.Model;
+using OnlineAptitudeTest.Validation;
 
 namespace OnlineAptitudeTest.Controllers
 {
@@ -17,18 +18,12 @@ namespace OnlineAptitudeTest.Controllers
         [Route("{userID}")]
         public IActionResult ListingRegisters(string userId)
         {
-            User user = db.Users.SingleOrDefault(u => u.Id == userId);
-            if (user != null)
+            ValidateOn validate = new ValidateOn(db);
+            if (validate.rule(userId, "read"))
             {
-                Roles roles = db.Roles.SingleOrDefault(r => r.Id == user.RoleId);
-
-                if (roles != null && roles.Name == "admin" && roles.Permissions.Contains("read"))
-                {
-                    List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId).ToList();
-                    return Ok(candidates);
-                }
+                List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId).ToList();
+                return Ok(candidates);
             }
-
             return NotFound("Authorization");
         }
         [HttpGet]
@@ -62,13 +57,13 @@ namespace OnlineAptitudeTest.Controllers
             if (condidate.Education is null) return NotFound("Education is not found");
             if (condidate.managerId is null) return NotFound("ManagerId is not found");
             if (condidate.BirthDay is null) return NotFound("BirthDay is not found");
-            bool cdd = db.Condidates.Any(c => c.userId == condidate.userId);
+            bool cdd = db.Condidates.Any(c => c.userId == condidate.userId && c.managerId == condidate.managerId);
             if (!cdd)
             {
                 User isM = db.Users.SingleOrDefault(u => u.Id == condidate.managerId);
                 if (isM is not null)
                 {
-                    bool isD = db.Roles.Any(u => u.Id == isM.RoleId && u.Name == "admin");
+                    bool isD = db.Roles.Any(u => u.Id == isM.RoleId && u.Name == "admin" && u.Permissions.Contains("create"));
                     if (isD)
                     {
                         Condidate cd = new Condidate();
@@ -123,29 +118,37 @@ namespace OnlineAptitudeTest.Controllers
             if (condidate.UserName is null) return NotFound("UserName is not found");
             if (condidate.Id < 0) return NotFound("Id is not found");
             if (condidate.Password is null) return NotFound("Password is not found");
+            if (condidate.managerId is null) return NotFound("managerId is not found");
             if (condidate.occupationId is null) return NotFound("occupationId is not found");
             if (condidate.userId is null) return NotFound("userId is not found");
-            Condidate c = db.Condidates.SingleOrDefault(c => c.UserName == condidate.UserName && c.occupationId == condidate.occupationId);
+            if (condidate.Note is null) return NotFound("Note is not found");
+            Condidate c = db.Condidates.FirstOrDefault(c => c.UserName == condidate.UserName && c.occupationId == condidate.occupationId && c.managerId == condidate.managerId);
             if (c == null)
             {
-                Condidate ca = db.Condidates.SingleOrDefault(c => c.Id == condidate.Id && c.occupationId == condidate.occupationId && c.userId == condidate.userId);
+                Condidate ca = db.Condidates.FirstOrDefault(c => c.Id == condidate.Id && c.occupationId == condidate.occupationId && c.userId == condidate.userId && c.managerId == condidate.managerId);
                 if (ca is not null)
                 {
                     ca.UserName = condidate.UserName;
                     ca.Password = condidate.Password;
+                    ca.Note = condidate.Note;
                     ca.Start = "generated";
                     db.Condidates.Update(ca);
                     db.SaveChanges();
                     return Ok("ok");
                 }
+                return NotFound("Candidate not found");
             }
-            return NotFound("Candidate was exsiting");
+            return NotFound("User name is existing!");
         }
         [HttpPost]
         public IActionResult Login([FromBody] Condidate condidate)
         {
-            if (condidate.UserName == null || condidate.Password == null || condidate.occupationId == null) return NotFound("User name or Password can't be null!");
-            Condidate c = db.Condidates.SingleOrDefault(c => c.occupationId == condidate.occupationId && c.UserName == condidate.UserName && c.Password == condidate.Password);
+            if (condidate.UserName == null) return NotFound("User name  can't be null!");
+            if (condidate.Password == null) return NotFound(" Password can't be null!");
+            if (condidate.occupationId == null) return NotFound("occupationId can't be null!");
+            if (condidate.managerId == null) return NotFound("managerId can't be null!");
+            if (condidate.userId == null) return NotFound("userId can't be null!");
+            Condidate c = db.Condidates.FirstOrDefault(c => c.userId == condidate.userId && c.managerId == condidate.managerId && c.occupationId == condidate.occupationId && c.UserName == condidate.UserName && c.Password == condidate.Password);
             if (c == null) return NotFound("User name or Password was wrong!");
             DateTime currentDate = DateTime.Now;
             c.Start = "starting";

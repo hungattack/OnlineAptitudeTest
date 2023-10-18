@@ -23,6 +23,7 @@ namespace OnlineAptitudeTest.Controllers
                 Id = u.Id,
                 Name = u.Name,
                 Email = u.Email,
+                Gender = u.Gender,
                 RoleId = u.RoleId,
                 roles = new Roles
                 {

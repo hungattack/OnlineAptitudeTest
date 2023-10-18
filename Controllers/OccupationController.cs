@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineAptitudeTest.Model;
+using OnlineAptitudeTest.Validation;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -72,7 +73,7 @@ namespace OnlineAptitudeTest.Controllers
             Roles roles = db.Roles.SingleOrDefault(r => r.Id == isUser.RoleId);
             if (roles is null) return NotFound("You have no any permission");
             if (roles.Name != "admin") return NotFound("You're not admin");
-            if (!roles.Permissions.Contains("create")) return NotFound("You have no permission to create");
+            if (!roles.Permissions.Contains("create")) return NotFound("You have no any permission to create");
 
             if (!ModelState.IsValid)
             {
@@ -156,14 +157,15 @@ namespace OnlineAptitudeTest.Controllers
             return Ok(new { id = id });
         }
         [HttpDelete]
-        [Route("{id}/{occupationId}")]
-        public async Task<IActionResult> DeleteInfo(int id, string occupationId)
+        [Route("{id}/{occupationId}/{managerId}")]
+        public async Task<IActionResult> DeleteInfo(int id, string occupationId, string managerId)
         {
             if (id < 0) return NotFound("Id is empty");
             if (occupationId is null) return NotFound("occupationId is empty");
+            if (managerId is null) return NotFound("managerId is empty");
             Occupation occupation = await db.Occupations.SingleAsync(u => u.Id == occupationId);
             if (occupation == null) return NotFound("Occupation is null");
-            Info info = await db.infos.SingleOrDefaultAsync(i => i.Id == id && i.occupationId == occupationId);
+            Info info = await db.infos.FirstOrDefaultAsync(i => i.Id == id && i.occupationId == occupationId && i.managerId == managerId);
             if (info == null) return NotFound("info is null");
             db.infos.Remove(info); db.SaveChanges();
             return Ok("ok");
@@ -179,9 +181,13 @@ namespace OnlineAptitudeTest.Controllers
             if (info.Contact == null) return NotFound("Contact no found");
             if (info.Name == null) return NotFound("Name no found");
             if (info.Company == null) return NotFound("Company no found");
+            if (info.managerId == null) return NotFound("managerId no found");
+            ValidateOn validate = new ValidateOn(db);
+            if (!validate.rule(info.managerId, "create")) return NotFound("You have no any permissions to create");
             Occupation oc = db.Occupations.SingleOrDefault(o => o.Id == info.occupationId);
             if (oc == null) return NotFound("Occupation not found");
             Info ifo = new Info();
+            ifo.managerId = info.managerId;
             ifo.occupationId = info.occupationId;
             ifo.Position = info.Position;
             ifo.Address = info.Address;
@@ -236,5 +242,6 @@ namespace OnlineAptitudeTest.Controllers
             }
             return NotFound("Occupation is not found when update active");
         }
+
     }
 }

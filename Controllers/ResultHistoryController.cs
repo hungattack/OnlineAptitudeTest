@@ -17,6 +17,20 @@ namespace OnlineAptitudeTest.Controllers
             this.db = db;
         }
         [HttpGet]
+        [Route("{type}")]
+        public IActionResult ListingCate(string type)
+        {
+            if (type == "new")
+            {
+                List<QuestionHistory> questionHistorys = db.QuestionHistories.OrderBy(q => q.CreatedAt).ToList();
+                foreach (QuestionHistory q in questionHistorys)
+                {
+                    // haven't finish
+                }
+            }
+            return null;
+        }
+        [HttpGet]
         [Route("{userId}/{manaId}")]
         public IActionResult ListingExams(string userId, string manaId)
         {
@@ -27,7 +41,7 @@ namespace OnlineAptitudeTest.Controllers
 
                 if (roles != null && roles.Name == "admin" && roles.Permissions.Contains("read"))
                 {
-                    List<QuestionHistory> questionHistories = db.QuestionHistories.Include(q => q.occupation).Where(q => q.userId == userId).ToList();
+                    List<QuestionHistory> questionHistories = db.QuestionHistories.Include(q => q.occupation).Where(q => q.userId == userId && q.occupation.userId == manaId).ToList();
                     foreach (QuestionHistory questionHistory in questionHistories)
                     {
                         List<ResultHistory> resultHistories = db.resultHistories.Where(r => r.occupaionId == questionHistory.occupationId && r.questionHisId == questionHistory.Id).ToList();
@@ -65,7 +79,7 @@ namespace OnlineAptitudeTest.Controllers
                 history.Id = guidStrings;
                 history.userId = questions.UserId;
                 history.occupationId = questions.OccupationId;
-                history.UpdatedAt = currentDate;
+                history.CreatedAt = currentDate;
                 history.pointAll = questions.Point;
                 db.QuestionHistories.Add(history);
                 db.SaveChanges();
