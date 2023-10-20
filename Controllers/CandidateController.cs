@@ -44,6 +44,23 @@ namespace OnlineAptitudeTest.Controllers
 
             return NotFound("Authorization");
         }
+        [HttpGet]
+        [Route("{name}/{cate}/{manaId}")]
+        public IActionResult SearchByName(string name, string cate, string manaId)
+        {
+
+            ValidateOn validateOn = new ValidateOn(db);
+            if (validateOn.rule(manaId, "read"))
+            {
+                if (cate == "finish")
+                {
+                    return Ok(db.Condidates.Include(o => o.occupation).Where(c => c.managerId == manaId && c.Name.Contains(name) && c.Start == "end").ToList());
+                }
+                return Ok(db.Condidates.Include(o => o.occupation).Where(c => c.managerId == manaId && c.Name.Contains(name)).ToList());
+
+            }
+            return NotFound("Authorization!");
+        }
         [HttpPost]
         public IActionResult AddNew([FromBody] Condidate condidate)
         {
@@ -57,7 +74,7 @@ namespace OnlineAptitudeTest.Controllers
             if (condidate.Education is null) return NotFound("Education is not found");
             if (condidate.managerId is null) return NotFound("ManagerId is not found");
             if (condidate.BirthDay is null) return NotFound("BirthDay is not found");
-            bool cdd = db.Condidates.Any(c => c.userId == condidate.userId && c.managerId == condidate.managerId);
+            bool cdd = db.Condidates.Any(c => c.userId == condidate.userId && c.managerId == condidate.managerId && c.Name == condidate.Name);
             if (!cdd)
             {
                 User isM = db.Users.SingleOrDefault(u => u.Id == condidate.managerId);
@@ -85,7 +102,7 @@ namespace OnlineAptitudeTest.Controllers
                 }
                 return NotFound("Manager doesn't exist!");
             }
-            return NotFound("Candidate was existing!");
+            return NotFound("Candidate was existing or Name!");
 
         }
         [HttpDelete]

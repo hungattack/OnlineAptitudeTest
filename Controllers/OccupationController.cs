@@ -201,10 +201,12 @@ namespace OnlineAptitudeTest.Controllers
             return Ok("ok");
         }
         [HttpGet]
-        public IActionResult GetListing()
+        [Route("{name}")]
+        public IActionResult GetListing(string? name)
         {
             List<Occupation> occupations = new List<Occupation>();
-            List<Occupation> occupation = db.Occupations.Where(o => o.Active == true).Include(u => u.user).Select(o => new Occupation
+            bool oo = name == "null" ? true : false;
+            List<Occupation> occupation = db.Occupations.Where(o => oo == false ? o.Name.Contains(name) && o.Active == true : o.Active == true).Include(u => u.user).Select(o => new Occupation
             {
                 // Include other properties of Occupation that you need
                 Id = o.Id,
