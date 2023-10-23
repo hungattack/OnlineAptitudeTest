@@ -9,14 +9,12 @@ namespace OnlineAptitudeTest.Model
         [StringLength(50)]
         public string? Id { get; set; }
         public bool Gender { get; set; }
-        [Required]
         [StringLength(40)]
-        public string Email { get; set; }
+        public string? Email { get; set; }
         [StringLength(40)]
         public string? Name { get; set; }
-        [Required]
         [StringLength(250)]
-        public string Password { get; set; }
+        public string? Password { get; set; }
         public virtual Roles? roles { get; set; }
         [StringLength(50)]
         [ForeignKey(nameof(Roles.Id))]

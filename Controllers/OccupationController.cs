@@ -25,7 +25,7 @@ namespace OnlineAptitudeTest.Controllers
             List<Occupation> occupations = db.Occupations.Where(u => u.userId == id).ToList();
             foreach (Occupation occupation in occupations)
             {
-                List<CateParts> cateParts = db.CateParts.Where(c => c.OccupationId == occupation.Id).ToList();
+                List<CateParts> cateParts = db.CateParts.Where(c => c.OccupationId == occupation.Id).OrderByDescending(r => r.CreatedAt).ToList();
                 if (cateParts.Any())
                 {
                     occupation.Cates = cateParts;
@@ -129,9 +129,11 @@ namespace OnlineAptitudeTest.Controllers
             return Ok(new { id = oc.Id, id_f = catePart.Id, name_f = catePart.Name, id_s = catePartq.Id, name_s = catePartq.Name, id_t = catePartqs.Id, name_t = catePartqs.Name });
         }
         [HttpDelete]
-        [Route("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        [Route("{id}/{userId}")]
+        public async Task<IActionResult> Delete(string id, string userId)
         {
+            ValidateOn validate = new ValidateOn(db);
+            if (!validate.rule(userId, "delete", "admin")) return NotFound(new { status = 0, masseage = "Authorization" });
             if (id is null) return NotFound("Id is empty");
             Occupation occupation = await db.Occupations.SingleAsync(u => u.Id == id);
             if (occupation == null) return NotFound("Occupation is null");

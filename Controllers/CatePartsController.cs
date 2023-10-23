@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OnlineAptitudeTest.Model;
+using OnlineAptitudeTest.Validation;
 
 namespace OnlineAptitudeTest.Controllers
 {
@@ -67,15 +68,17 @@ namespace OnlineAptitudeTest.Controllers
                 cate.CreatedAt = currentDate;
                 db.Add(cate);
                 db.SaveChanges();
-                return Ok(new { cate });
+                return Ok(new { cate, status = 1 });
             }
             return Ok(isCate);
 
         }
         [HttpDelete]
-        [Route("[Controller]/[Action]/{id}/{occupationId}")]
-        public IActionResult Delete(string id, string occupationId)
+        [Route("[Controller]/[Action]/{id}/{occupationId}/{userId}")]
+        public IActionResult Delete(string id, string occupationId, string userId)
         {
+            ValidateOn validate = new ValidateOn(db);
+            if (!validate.rule(userId, "delete", "admin")) return NotFound(new { status = 0, message = "Authorization" });
             if (id is null) return NotFound("Id can not be null");
             if (occupationId is null) return NotFound("occupationId can not be null");
             CateParts isCate = db.CateParts.Single(c => c.Id == id && c.OccupationId == occupationId);

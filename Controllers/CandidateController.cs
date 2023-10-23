@@ -14,6 +14,7 @@ namespace OnlineAptitudeTest.Controllers
         {
             this.db = db;
         }
+
         [HttpGet]
         [Route("{userID}")]
         public IActionResult ListingRegisters(string userId)

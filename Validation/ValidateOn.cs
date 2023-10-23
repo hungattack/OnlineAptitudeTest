@@ -25,14 +25,14 @@ namespace OnlineAptitudeTest.Validation
             Regex regex = new Regex(pattern);
             return regex.IsMatch(email);
         }
-        public bool rule(string manaId, string rule)
+        public bool rule(string manaId, string rule, string name = "admin")
         {
             if (manaId is null) return false;
             User user = db.Users.SingleOrDefault(u => u.Id == manaId);
             if (user != null)
             {
                 Roles roles = db.Roles.SingleOrDefault(r => r.Id == user.RoleId);
-                if (roles != null && roles.Name == "admin" && roles.Permissions.Contains(rule))
+                if (roles != null && roles.Name == name && roles.Permissions.Contains(rule))
                 {
                     return true;
                 }
