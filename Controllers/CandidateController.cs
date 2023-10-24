@@ -82,7 +82,7 @@ namespace OnlineAptitudeTest.Controllers
             if (condidate.Experience is null) return NotFound("Experience is not found");
             if (condidate.Name is null) return NotFound("Name is not found");
             if (condidate.PhoneNumber is null) return NotFound("Phone Number is not found");
-            if (condidate.userId is null) return NotFound("UserId is not found");
+            if (condidate.userId is null) return NotFound("UserId is not found"); // manager
             if (condidate.occupationId is null) return NotFound("occupationId is not found");
             if (condidate.Education is null) return NotFound("Education is not found");
             if (condidate.managerId is null) return NotFound("ManagerId is not found");
@@ -133,11 +133,11 @@ namespace OnlineAptitudeTest.Controllers
             return Ok("ok");
         }
         [HttpPut]
-        [Route("{manaId}/{userId}")]
-        public IActionResult Finish(string manaId, string userId)
+        [Route("{manaId}/{occId}/{userId}")]
+        public IActionResult Finish(string manaId, string userId, string occId)
         {
             if (manaId == null || userId == null) return NotFound("manaId or userId are not found!");
-            Condidate condidate = db.Condidates.FirstOrDefault(c => c.managerId == manaId && c.userId == userId);
+            Condidate condidate = db.Condidates.FirstOrDefault(c => c.managerId == manaId && c.userId == userId && c.occupationId == occId);
             if (condidate == null) return NotFound("Candidate is not found");
             condidate.ReTest = null;
             condidate.Start = "end";

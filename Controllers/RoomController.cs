@@ -19,8 +19,8 @@ namespace OnlineAptitudeTest.Controllers
         public IActionResult getRoom(string id, string userId)
         {
             if (id == null) return NotFound("Room code is not found!");
-            Condidate condidate = db.Condidates.FirstOrDefault(c => c.userId == userId);
-            if (condidate == null || condidate.Start == "end" && condidate.ReTest is null) return NotFound("This Candidate is not allowed!");
+            Condidate condidate = db.Condidates.FirstOrDefault(c => c.userId == userId && c.occupationId == id);
+            if (condidate == null || (condidate.Start == "end" && condidate.ReTest is null)) return NotFound("This Candidate is not allowed!");
             QuestionHistory questionHistory = db.QuestionHistories.FirstOrDefault(q => q.userId == userId && q.occupationId == id);
             if (questionHistory is null)
             {
