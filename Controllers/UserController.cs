@@ -51,27 +51,48 @@ namespace OnlineAptitudeTest.Controllers
             return NotFound("Authorization");
         }
         [HttpGet]
-        [Route("{userID}/{offset}/{limit}/{type}")]
-        public IActionResult ListingInfoAdmin(string userId, int offset, int limit, string type)
+        [Route("{userID}/{offset}/{limit}/{type}/{search}")]
+        public IActionResult ListingInfoAdmin(string userId, int offset, int limit, string type, string? search = null)
         {
             ValidateOn validate = new ValidateOn(db);
             if (validate.rule(userId, "read", "roof"))
             {
-                var query = from User in db.Users
-                            join Roles in db.Roles
-                            on User.RoleId equals Roles.Id
-                            where Roles.Name == type
-                            select new
-                            {
-                                id = User.Id,
-                                name = User.Name,
-                                gender = User.Gender,
-                                email = User.Email,
-                                Role = Roles,
-                            };
+                if (search == "null")
+                {
+                    var query = from User in db.Users
+                                join Roles in db.Roles
+                                on User.RoleId equals Roles.Id
+                                where Roles.Name == type
+                                select new
+                                {
+                                    id = User.Id,
+                                    name = User.Name,
+                                    gender = User.Gender,
+                                    email = User.Email,
+                                    Role = Roles,
+                                };
 
-                var results = query.Skip(offset).Take(limit).ToList();
-                return Ok(results);
+                    var results = query.Skip(offset).Take(limit).ToList();
+                    return Ok(results);
+                }
+                else
+                {
+                    var query = from User in db.Users
+                                join Roles in db.Roles
+                                on User.RoleId equals Roles.Id
+                                where Roles.Name == type && User.Name.Contains(search)
+                                select new
+                                {
+                                    id = User.Id,
+                                    name = User.Name,
+                                    gender = User.Gender,
+                                    email = User.Email,
+                                    Role = Roles,
+                                };
+
+                    var results = query.Skip(offset).Take(limit).ToList();
+                    return Ok(results);
+                }
             }
             return NotFound("Authorization");
         }

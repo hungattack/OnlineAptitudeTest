@@ -38,9 +38,11 @@ namespace OnlineAptitudeTest.Controllers
             return flag;
         }
         [HttpPost]
-        [Route("[Controller]/[Action]")]
-        public IActionResult AddNew([FromBody] CateParts catepart)
+        [Route("[Controller]/[Action]/${userId}")]
+        public IActionResult AddNew(string userId, [FromBody] CateParts catepart)
         {
+            ValidateOn validate = new ValidateOn(db);
+            if (!validate.rule(userId, "create", "admin")) return NotFound(new { status = 0, message = "Authorization" });
             Guid myGuids = Guid.NewGuid(); // generate ids
             string guidStrings = myGuids.ToString();
             DateTime currentDate = DateTime.Now;
@@ -94,9 +96,11 @@ namespace OnlineAptitudeTest.Controllers
 
         }
         [HttpPut]
-        [Route("[Controller]/[Action]")]
-        public IActionResult Update(CateParts catepart)
+        [Route("[Controller]/[Action]/{userId}")]
+        public IActionResult Update(string userId, CateParts catepart)
         {
+            ValidateOn validate = new ValidateOn(db);
+            if (!validate.rule(userId, "update", "admin")) return NotFound(new { status = 0, message = "Authorization" });
             if (catepart.Id is null) return NotFound("Id not found");
             if (catepart.OccupationId is null) return NotFound("OccupationId not found");
             CateParts cateparts = db.CateParts.SingleOrDefault(c => c.Id == catepart.Id && c.OccupationId == catepart.OccupationId);

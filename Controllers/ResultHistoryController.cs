@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineAptitudeTest.Model;
+using OnlineAptitudeTest.Validation;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -62,7 +63,47 @@ namespace OnlineAptitudeTest.Controllers
             return NotFound("Authorization");
 
         }
+        [HttpGet]
+        [Route("{userId}/{manaId}")]
+        public IActionResult FirstYearExam(string userId, string manaId)
+        {
+            ValidateOn validate = new ValidateOn(db);
+            User user = db.Users.SingleOrDefault(u => u.Id == manaId);
+            if (user != null)
+            {
+                Roles roles = db.Roles.SingleOrDefault(r => r.Id == user.RoleId);
 
+                if (validate.rule(userId, "read", "admin"))
+                {
+                    List<QuestionHistory> questionHistories = db.QuestionHistories.Where(q => q.userId == userId && q.occupation.userId == manaId).OrderBy(q => q.CreatedAt).Take(1).ToList();
+                    return Ok(questionHistories[0].CreatedAt);
+                }
+                return NotFound(new { status = 0, masseage = "Authorization" });
+            }
+
+            return NotFound("Authorization");
+
+        }
+        [HttpGet]
+        [Route("{id}/{date}")]
+        public IActionResult Filter(string id, DateTime date)
+        {
+            var query = from rh in db.resultHistories
+                        join qh in db.QuestionHistories on rh.questionHisId equals qh.Id
+                        where qh.userId == id && qh.CreatedAt.Date <= date.Date
+                        select new ResultHistory
+                        {
+                            Id = rh.Id,
+                            occupaionId = rh.occupaionId,
+                            questionHisId = rh.questionHisId,
+                            catePartId = rh.catePartId,
+                            Answer = rh.Answer,
+                            CreatedAt = rh.CreatedAt,
+                            UpdatedAt = rh.UpdatedAt,
+                        };
+            var result = query.ToList();
+            return Ok(result);
+        }
         [HttpPost]
         public IActionResult AddNew([FromBody] UpdataQuestion questions)
         {
@@ -151,9 +192,8 @@ namespace OnlineAptitudeTest.Controllers
             User user = db.Users.SingleOrDefault(u => u.Id == manaId);
             if (user != null)
             {
-                Roles roles = db.Roles.SingleOrDefault(r => r.Id == user.RoleId);
-
-                if (roles != null && roles.Name == "admin" && roles.Permissions.Contains("delete"))
+                ValidateOn validate = new ValidateOn(db);
+                if (!validate.rule(manaId, "delete", "admin"))
                 {
                     QuestionHistory questionHistorys = db.QuestionHistories.FirstOrDefault(q => q.userId == userId && q.occupationId == occupationId);
                     if (questionHistorys is not null)
@@ -165,8 +205,10 @@ namespace OnlineAptitudeTest.Controllers
                         return Ok("ok");
                     }
                 }
+                return NotFound(new { status = 0, masseage = "Authorization" });
+
             }
-            return Ok("Authorization!");
+            return NotFound("Authorization!");
         }
     }
 }

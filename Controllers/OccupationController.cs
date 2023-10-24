@@ -47,7 +47,7 @@ namespace OnlineAptitudeTest.Controllers
         {
             if (id is null) return NotFound("Id is empty");
 
-            List<Info> infos = db.infos.Where(u => u.occupationId == id).ToList();
+            List<Info> infos = db.infos.Where(u => u.occupationId == id).OrderByDescending(c => c.CreatedAt).ToList();
             // Serialize your object using the JsonSerializerOptions
             return Ok(infos);
         }
@@ -185,6 +185,7 @@ namespace OnlineAptitudeTest.Controllers
             if (info.Company == null) return NotFound("Company no found");
             if (info.managerId == null) return NotFound("managerId no found");
             ValidateOn validate = new ValidateOn(db);
+            DateTime currentDate = DateTime.Now;
             if (!validate.rule(info.managerId, "create")) return NotFound("You have no any permissions to create");
             Occupation oc = db.Occupations.SingleOrDefault(o => o.Id == info.occupationId);
             if (oc == null) return NotFound("Occupation not found");
@@ -197,6 +198,7 @@ namespace OnlineAptitudeTest.Controllers
             ifo.Contact = info.Contact;
             ifo.Name = info.Name;
             ifo.Requirement = info.Requirement;
+            ifo.CreatedAt = currentDate;
             ifo.Introduction = info.Introduction;
             db.infos.Add(ifo);
             db.SaveChanges();

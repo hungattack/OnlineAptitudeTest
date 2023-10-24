@@ -17,12 +17,24 @@ namespace OnlineAptitudeTest.Controllers
 
         [HttpGet]
         [Route("{userID}")]
+        public IActionResult ListingGenerated(string userId)
+        {
+            ValidateOn validate = new ValidateOn(db);
+            if (validate.rule(userId, "read"))
+            {
+                List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId && c.UserName != null && c.Password != null).OrderByDescending(c => c.CreatedAt).ToList();
+                return Ok(candidates);
+            }
+            return NotFound("Authorization");
+        }
+        [HttpGet]
+        [Route("{userID}")]
         public IActionResult ListingRegisters(string userId)
         {
             ValidateOn validate = new ValidateOn(db);
             if (validate.rule(userId, "read"))
             {
-                List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId).ToList();
+                List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId && c.UserName == null && c.Password == null).OrderByDescending(c => c.CreatedAt).ToList();
                 return Ok(candidates);
             }
             return NotFound("Authorization");
@@ -38,7 +50,7 @@ namespace OnlineAptitudeTest.Controllers
 
                 if (roles != null && roles.Name == "admin" && roles.Permissions.Contains("read"))
                 {
-                    List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId && c.Start == "end").ToList();
+                    List<Condidate> candidates = db.Condidates.Include(o => o.occupation).Where(c => c.managerId == userId && c.Start == "end").OrderByDescending(c => c.CreatedAt).ToList();
                     return Ok(candidates);
                 }
             }
@@ -75,7 +87,7 @@ namespace OnlineAptitudeTest.Controllers
             if (condidate.Education is null) return NotFound("Education is not found");
             if (condidate.managerId is null) return NotFound("ManagerId is not found");
             if (condidate.BirthDay is null) return NotFound("BirthDay is not found");
-            bool cdd = db.Condidates.Any(c => c.userId == condidate.userId && c.managerId == condidate.managerId && c.Name == condidate.Name);
+            bool cdd = db.Condidates.Any(c => c.userId == condidate.userId && c.managerId == condidate.managerId && c.occupationId == condidate.occupationId);
             if (!cdd)
             {
                 User isM = db.Users.SingleOrDefault(u => u.Id == condidate.managerId);
@@ -84,6 +96,8 @@ namespace OnlineAptitudeTest.Controllers
                     bool isD = db.Roles.Any(u => u.Id == isM.RoleId && u.Name == "admin" && u.Permissions.Contains("create"));
                     if (isD)
                     {
+                        DateTime currentDate = DateTime.Now;
+
                         Condidate cd = new Condidate();
                         cd.userId = condidate.userId;
                         cd.managerId = condidate.managerId;
@@ -96,14 +110,15 @@ namespace OnlineAptitudeTest.Controllers
                         cd.Education = condidate.Education;
                         cd.Start = "ready";
                         cd.ReTest = null;
+                        cd.CreatedAt = currentDate;
                         db.Condidates.Add(cd);
                         db.SaveChanges();
                         return Ok("Add successful");
                     }
                 }
-                return NotFound("Manager doesn't exist!");
+                return NotFound("Authorization!");
             }
-            return NotFound("Candidate was existing or Name!");
+            return NotFound("Candidate was existing!");
 
         }
         [HttpDelete]
